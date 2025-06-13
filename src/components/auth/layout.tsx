@@ -34,7 +34,7 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
       <Box
         sx={{
           alignItems: 'center',
-          background: 'radial-gradient(50% 50% at 50% 50%, #122647 0%, #090E23 100%)',
+          background: 'radial-gradient(50% 50% at 50% 50%, #4b0082 0%, #090E23 100%)',
           color: 'var(--mui-palette-common-white)',
           display: { xs: 'none', lg: 'flex' },
           justifyContent: 'center',
@@ -44,21 +44,28 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
         <Stack spacing={3}>
           <Stack spacing={1}>
             <Typography color="inherit" sx={{ fontSize: '24px', lineHeight: '32px', textAlign: 'center' }} variant="h1">
-              Welcome to{' '}
-              <Box component="span" sx={{ color: '#15b79e' }}>
-                Devias Kit
-              </Box>
+              Bem-vindo ao{' '}
+                <Box
+                  component="span"
+                  sx={{
+                    color: '#f5f5f5',
+                    fontFamily: 'MuseoModerno, sans-serif',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  OpSpotter
+                </Box>
             </Typography>
             <Typography align="center" variant="subtitle1">
-              A professional template that comes with ready-to-use MUI components.
+              A plataforma de Inteligência Artificial para os seus investimentos
             </Typography>
           </Stack>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Box
               component="img"
               alt="Widgets"
-              src="/assets/auth-widgets.png"
-              sx={{ height: 'auto', width: '100%', maxWidth: '600px' }}
+              src="/assets/OpS-Robot-SignIn.png"
+              sx={{ height: 'auto', width: '100%', maxWidth: '1600px' }}
             />
           </Box>
         </Stack>
