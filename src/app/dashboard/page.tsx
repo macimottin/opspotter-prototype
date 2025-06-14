@@ -1,64 +1,54 @@
 'use client';
 
 import * as React from 'react';
-import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
 import Box from '@mui/material/Box';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-import { config } from '@/config';
 import { paths } from '@/paths';
+import { IntegrationCard } from '@/components/dashboard/integrations/integrations-card';
 
 const options = [
   {
     key: 'commodities',
     title: 'Commodities',
     description: 'Acesse análises de commodities agrícolas.',
+    logo: '/assets/commodities-logo.svg',
     href: paths.dashboard.commodities,
   },
   {
     key: 'criptomoedas',
     title: 'Criptomoedas',
     description: 'Veja análises de criptomoedas como Bitcoin e Ethereum.',
+    logo: '/assets/cripto-logo.svg',
     href: paths.dashboard.criptomoedas,
   },
 ];
 
 export default function Page(): React.JSX.Element {
-  const router = useRouter();
   return (
-    <Stack spacing={4} sx={{ mt: 4, ml: 4 }}>
+    <Stack spacing={4} sx={{ mt: 4, ml: 4, alignItems: 'center' }}>
       <Typography variant="h3">O que você quer analisar hoje?</Typography>
-      <Grid container spacing={4}>
+      <Box sx={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
         {options.map((option) => (
-          <Box key={option.key} sx={{ width: { xs: '100%', sm: '50%', md: '33.33%', lg: '25%' }, p: 2, boxSizing: 'border-box' }}>
-            <Card>
-              <CardActionArea onClick={() => router.push(option.href)}>
-                <Box
-                  sx={{
-                    p: 4,
-                    minHeight: 120,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography variant="h5" align="center">
-                    {option.title}
-                  </Typography>
-                  <Typography variant="body2" align="center" sx={{ mt: 1 }}>
-                    {option.description}
-                  </Typography>
-                </Box>
-              </CardActionArea>
-            </Card>
+          <Box key={option.key} sx={{ minWidth: 340, maxWidth: 380, flex: '1 1 340px', display: 'flex', justifyContent: 'center' }}>
+            <Link href={option.href} style={{ textDecoration: 'none', width: '100%' }}>
+              <IntegrationCard
+                integration={{
+                  id: option.key,
+                  title: option.title,
+                  description: option.description,
+                  logo: option.logo,
+                  installs: 0,
+                  updatedAt: new Date(),
+                }}
+              />
+            </Link>
           </Box>
         ))}
-      </Grid>
+      </Box>
     </Stack>
   );
 }
