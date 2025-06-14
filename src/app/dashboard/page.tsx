@@ -4,7 +4,6 @@ import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import { paths } from '@/paths';
