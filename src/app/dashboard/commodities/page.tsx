@@ -13,13 +13,12 @@ import { IntegrationCard } from '@/components/dashboard/integrations/integration
 
 export const metadata = { title: `Commodities | Dashboard | ${config.site.name}` } satisfies Metadata;
 
-const placeholder = '/assets/product-1.png';
 const commodities = [
   {
     id: 'milho',
     title: 'Milho',
     description: 'O milho é um grão amplamente cultivado, essencial para alimentação, ração animal e produtos industriais.',
-    logo: placeholder,
+    logo: '/assets/corn-icon.svg',
     installs: 1200,
     updatedAt: dayjs().subtract(2, 'hour').toDate(),
   },
@@ -27,7 +26,7 @@ const commodities = [
     id: 'soja',
     title: 'Soja',
     description: 'A soja é uma importante fonte de proteína e óleo, utilizada na alimentação e na indústria.',
-    logo: placeholder,
+    logo: '/assets/soybean-icon.svg',
     installs: 950,
     updatedAt: dayjs().subtract(1, 'day').toDate(),
   },
@@ -35,7 +34,7 @@ const commodities = [
     id: 'trigo',
     title: 'Trigo',
     description: 'O trigo é um alimento básico, fornecendo nutrição para bilhões de pessoas no mundo.',
-    logo: placeholder,
+    logo: '/assets/wheat-icon.svg',
     installs: 1100,
     updatedAt: dayjs().subtract(3, 'hour').toDate(),
   },
@@ -43,7 +42,7 @@ const commodities = [
     id: 'arroz',
     title: 'Arroz',
     description: 'O arroz é a principal fonte de alimento para mais da metade da população mundial.',
-    logo: placeholder,
+    logo: '/assets/rice-icon.svg',
     installs: 800,
     updatedAt: dayjs().subtract(5, 'hour').toDate(),
   },

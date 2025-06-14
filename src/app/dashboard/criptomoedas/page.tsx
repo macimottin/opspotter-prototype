@@ -13,13 +13,12 @@ import { IntegrationCard } from '@/components/dashboard/integrations/integration
 
 export const metadata = { title: `Criptomoedas | Dashboard | ${config.site.name}` } satisfies Metadata;
 
-const placeholder = '/assets/product-1.png';
 const criptos = [
   {
     id: 'bitcoin',
     title: 'Bitcoin',
     description: 'Bitcoin é a primeira e mais conhecida criptomoeda, utilizada como reserva de valor e meio de troca digital.',
-    logo: placeholder,
+    logo: '/assets/btc-logo.svg',
     installs: 21_000_000, // Satoshi max supply for fun
     updatedAt: dayjs().subtract(1, 'hour').toDate(),
   },
@@ -27,7 +26,7 @@ const criptos = [
     id: 'ethereum',
     title: 'Ethereum',
     description: 'Ethereum é uma plataforma descentralizada que permite a criação de contratos inteligentes e aplicativos distribuídos.',
-    logo: placeholder,
+    logo: '/assets/eth-logo.svg',
     installs: 120_000_000, // Example supply
     updatedAt: dayjs().subtract(2, 'hour').toDate(),
   },

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -25,7 +24,7 @@ export function IntegrationCard({ integration }: IntegrationCardProps): React.JS
       <CardContent sx={{ flex: '1 1 auto' }}>
         <Stack spacing={2}>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Avatar src={integration.logo} variant="square" />
+            <Box component="img" src={integration.logo} alt={integration.title} sx={{ width: 96, height: 96 }} />
           </Box>
           <Stack spacing={1}>
             <Typography align="center" variant="h5">
