@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -71,10 +70,11 @@ export default function CommodityPage() {
     <Stack spacing={3}>
       <Typography variant="h4">{data.title}</Typography>
       <Typography variant="body1">{data.description}</Typography>
-      <Grid container spacing={3}>
-        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 66%' }, minWidth: 0, p: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+        {/* Left column: Análise de IA */}
+        <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: 1 }}>
           <Card>
-            <CardContent>
+            <CardContent sx={{ maxHeight: 400, overflow: 'auto' }}>
               <Typography variant="h6" gutterBottom>Análise de IA</Typography>
               {loading && <Typography variant="body2">Carregando análise...</Typography>}
               {error && <Typography variant="body2" color="error.main">{error}</Typography>}
@@ -107,23 +107,22 @@ export default function CommodityPage() {
             </CardContent>
           </Card>
         </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 33%' }, minWidth: 0, p: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <Card sx={{ mb: 3 }}>
+        {/* Right column: Gráfico de Candles and Últimas Notícias */}
+        <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>Gráfico de Candles</Typography>
-              {/* Aqui será exibido o gráfico de candles do ativo */}
               <Typography variant="body2" color="text.secondary">(Gráfico de candles será exibido aqui...)</Typography>
             </CardContent>
           </Card>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>Últimas Notícias & Sentimento</Typography>
-              {/* Aqui será exibida a lista de notícias e o sentimento */}
               <Typography variant="body2" color="text.secondary">(Notícias e sentimento serão exibidos aqui...)</Typography>
             </CardContent>
           </Card>
         </Box>
-      </Grid>
+      </Box>
     </Stack>
   );
 }

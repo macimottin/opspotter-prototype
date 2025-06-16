@@ -4,7 +4,6 @@ import * as React from 'react';
 import { useParams } from 'next/navigation';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
@@ -65,10 +64,11 @@ export default function CriptoPage() {
     <Stack spacing={3}>
       <Typography variant="h4">{data.title}</Typography>
       <Typography variant="body1">{data.description}</Typography>
-      <Grid container spacing={3}>
-        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 66%' }, minWidth: 0, p: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+        {/* Left column: Análise de IA */}
+        <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: 1 }}>
           <Card>
-            <CardContent>
+            <CardContent sx={{ maxHeight: 400, overflow: 'auto' }}>
               <Typography variant="h6" gutterBottom>
                 Análise de IA
                 {analise?.timestamp && (
@@ -89,8 +89,9 @@ export default function CriptoPage() {
             </CardContent>
           </Card>
         </Box>
-        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 33%' }, minWidth: 0, p: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <Card sx={{ mb: 3 }}>
+        {/* Right column: Gráfico de Candles and Últimas Notícias */}
+        <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>Gráfico de Candles</Typography>
               <Typography variant="body2" color="text.secondary">(Gráfico de candles será exibido aqui...)</Typography>
@@ -103,7 +104,7 @@ export default function CriptoPage() {
             </CardContent>
           </Card>
         </Box>
-      </Grid>
+      </Box>
     </Stack>
   );
 }
