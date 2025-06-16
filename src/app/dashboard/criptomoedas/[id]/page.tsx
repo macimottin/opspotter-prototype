@@ -9,6 +9,7 @@ import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
+import dynamic from 'next/dynamic';
 
 const cryptoData: Record<string, { title: string; description: string }> = {
   'bitcoin': {
@@ -27,6 +28,12 @@ interface AnaliseData {
   analise: string;
 }
 
+// Type for candlestick data
+interface Candle {
+  x: Date;
+  y: [number, number, number, number];
+}
+
 async function fetchAnalise(): Promise<AnaliseData | null> {
   const res = await fetch('https://unhoqitkhjfd3oivkzhgctybgm.appsync-api.sa-east-1.amazonaws.com/graphql', {
     method: 'POST',
@@ -42,6 +49,9 @@ async function fetchAnalise(): Promise<AnaliseData | null> {
     return json?.data?.getUltimaAnalise || null;
 }
 
+// Dynamically import ReactApexChart to avoid SSR issues
+const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
+
 export default function CriptoPage() {
   const params = useParams();
   const id = (params?.id as string)?.toLowerCase();
@@ -50,6 +60,11 @@ export default function CriptoPage() {
   const [analise, setAnalise] = useState<AnaliseData | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // State for candlestick data
+  const [candleData, setCandleData] = useState<Candle[]>([]);
+  const [candleLoading, setCandleLoading] = useState(false);
+  const [candleError, setCandleError] = useState<string | null>(null);
+
   useEffect(() => {
     if (id === 'bitcoin') {
       setLoading(true);
@@ -57,6 +72,36 @@ export default function CriptoPage() {
         setAnalise(res);
         setLoading(false);
       });
+      // Fetch candlestick data for BTC/BRL
+      setCandleLoading(true);
+      setCandleError(null);
+      fetch(
+        'https://api.twelvedata.com/time_series?symbol=BTC/BRL&interval=15min&outputsize=96&apikey=9160f2dd883d4fe2b73fa8bd73dc5332'
+      )
+        .then((res) => res.json())
+        .then((json) => {
+          if (json.status === 'error') {
+            setCandleError(json.message || 'Erro ao buscar dados de candles.');
+            setCandleData([]);
+          } else {
+            // Format data for ApexCharts
+            const candles = (json.values || []).map((item: { datetime: string; open: string; high: string; low: string; close: string; }) => ({
+              x: new Date(item.datetime),
+              y: [
+                Number.parseFloat(item.open),
+                Number.parseFloat(item.high),
+                Number.parseFloat(item.low),
+                Number.parseFloat(item.close),
+              ],
+            })).reverse(); // API returns newest first
+            setCandleData(candles);
+          }
+          setCandleLoading(false);
+        })
+        .catch((error) => {
+          setCandleError('Erro ao buscar dados de candles.');
+          setCandleLoading(false);
+        });
     }
   }, [id]);
 
@@ -94,7 +139,29 @@ export default function CriptoPage() {
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>Gráfico de Candles</Typography>
-              <Typography variant="body2" color="text.secondary">(Gráfico de candles será exibido aqui...)</Typography>
+              {id === 'bitcoin' ? (
+                candleLoading ? (
+                  <CircularProgress />
+                ) : candleError ? (
+                  <Typography color="error">{candleError}</Typography>
+                ) : candleData.length > 0 ? (
+                  <ReactApexChart
+                    type="candlestick"
+                    series={[{ data: candleData }]}
+                    options={{
+                      chart: { id: 'btc-candles', height: 350, type: 'candlestick' },
+                      xaxis: { type: 'datetime' },
+                      yaxis: { tooltip: { enabled: true } },
+                      title: { text: 'BTC/BRL - Últimas 24h (15min)', align: 'left' },
+                    }}
+                    height={350}
+                  />
+                ) : (
+                  <Typography variant="body2" color="text.secondary">Sem dados de candles.</Typography>
+                )
+              ) : (
+                <Typography variant="body2" color="text.secondary">(Gráfico de candles será exibido aqui...)</Typography>
+              )}
             </CardContent>
           </Card>
           <Card>
