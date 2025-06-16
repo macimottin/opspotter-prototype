@@ -11,15 +11,17 @@ import { useEffect, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import dynamic from 'next/dynamic';
 
-const cryptoData: Record<string, { title: string; description: string }> = {
+const cryptoData: Record<string, { title: string; description: string; icon: string }> = {
   'bitcoin': {
     title: 'Bitcoin',
-    description: 'Bitcoin é a primeira e mais conhecida criptomoeda, utilizada como reserva de valor e meio de troca digital.'
+    description: 'Bitcoin é a primeira e mais conhecida criptomoeda, utilizada como reserva de valor e meio de troca digital.',
+    icon: '/assets/btc-logo.svg',
   },
   'ethereum': {
     title: 'Ethereum',
-    description: 'Ethereum é uma plataforma descentralizada que permite a criação de contratos inteligentes e aplicativos distribuídos.'
-  }
+    description: 'Ethereum é uma plataforma descentralizada que permite a criação de contratos inteligentes e aplicativos distribuídos.',
+    icon: '/assets/eth-logo.svg',
+  },
 };
 
 interface AnaliseData {
@@ -55,7 +57,7 @@ const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false })
 export default function CriptoPage() {
   const params = useParams();
   const id = (params?.id as string)?.toLowerCase();
-  const data = cryptoData[id] || { title: 'Criptomoeda', description: 'Dados não encontrados.' };
+  const data = cryptoData[id] || { title: 'Criptomoeda', description: 'Dados não encontrados.', icon: '/assets/cripto-logo.svg' };
 
   const [analise, setAnalise] = useState<AnaliseData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -98,7 +100,7 @@ export default function CriptoPage() {
           }
           setCandleLoading(false);
         })
-        .catch((error) => {
+        .catch((_error) => {
           setCandleError('Erro ao buscar dados de candles.');
           setCandleLoading(false);
         });
@@ -107,7 +109,12 @@ export default function CriptoPage() {
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h4">{data.title}</Typography>
+      <Stack direction="row" alignItems="center" spacing={2}>
+        {data.icon && (
+          <Box component="img" src={data.icon} alt={data.title} sx={{ width: 64, height: 64 }} />
+        )}
+        <Typography variant="h4">{data.title}</Typography>
+      </Stack>
       <Typography variant="body1">{data.description}</Typography>
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
         {/* Left column: Análise de IA */}

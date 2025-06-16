@@ -10,29 +10,33 @@ import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import ReactMarkdown from 'react-markdown';
 
-const commodityData: Record<string, { title: string; description: string }> = {
+const commodityData: Record<string, { title: string; description: string; icon: string }> = {
   'milho': {
     title: 'Milho',
-    description: 'O milho é um grão amplamente cultivado, essencial para alimentação, ração animal e produtos industriais.'
+    description: 'O milho é um grão amplamente cultivado, essencial para alimentação, ração animal e produtos industriais.',
+    icon: '/assets/corn-icon.svg',
   },
   'soja': {
     title: 'Soja',
-    description: 'A soja é uma importante fonte de proteína e óleo, utilizada na alimentação e na indústria.'
+    description: 'A soja é uma importante fonte de proteína e óleo, utilizada na alimentação e na indústria.',
+    icon: '/assets/soybean-icon.svg',
   },
   'trigo': {
     title: 'Trigo',
-    description: 'O trigo é um alimento básico, fornecendo nutrição para bilhões de pessoas no mundo.'
+    description: 'O trigo é um alimento básico, fornecendo nutrição para bilhões de pessoas no mundo.',
+    icon: '/assets/wheat-icon.svg',
   },
   'arroz': {
     title: 'Arroz',
-    description: 'O arroz é a principal fonte de alimento para mais da metade da população mundial.'
-  }
+    description: 'O arroz é a principal fonte de alimento para mais da metade da população mundial.',
+    icon: '/assets/rice-icon.svg',
+  },
 };
 
 export default function CommodityPage() {
   const params = useParams();
   const id = (params?.id as string)?.toLowerCase();
-  const data = commodityData[id] || { title: 'Commoditie', description: 'Dados não encontrados.' };
+  const data = commodityData[id] || { title: 'Commoditie', description: 'Dados não encontrados.', icon: '/assets/commodities-logo.svg' };
 
   const [analise, setAnalise] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -68,7 +72,12 @@ export default function CommodityPage() {
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h4">{data.title}</Typography>
+      <Stack direction="row" alignItems="center" spacing={2}>
+        {data.icon && (
+          <Box component="img" src={data.icon} alt={data.title} sx={{ width: 64, height: 64 }} />
+        )}
+        <Typography variant="h4">{data.title}</Typography>
+      </Stack>
       <Typography variant="body1">{data.description}</Typography>
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
         {/* Left column: Análise de IA */}
