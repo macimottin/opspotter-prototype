@@ -20,7 +20,24 @@ export interface IntegrationCardProps {
 
 export function IntegrationCard({ integration }: IntegrationCardProps): React.JSX.Element {
   return (
-    <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Card
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        transition: 'box-shadow 0.2s, transform 0.2s',
+        boxShadow: 1,
+        cursor: 'pointer',
+        '&:hover': {
+          boxShadow: 6,
+          transform: 'translateY(-4px) scale(1.03)',
+        },
+        '&:active': {
+          boxShadow: 12,
+          transform: 'scale(0.98)',
+        },
+      }}
+    >
       <CardContent sx={{ flex: '1 1 auto' }}>
         <Stack spacing={2}>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>

@@ -8,6 +8,8 @@ import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
+import { useEffect, useState } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const cryptoData: Record<string, { title: string; description: string }> = {
   'bitcoin': {
@@ -20,10 +22,44 @@ const cryptoData: Record<string, { title: string; description: string }> = {
   }
 };
 
+interface AnaliseData {
+  id: string;
+  timestamp: string;
+  analise: string;
+}
+
+async function fetchAnalise(): Promise<AnaliseData | null> {
+  const res = await fetch('https://unhoqitkhjfd3oivkzhgctybgm.appsync-api.sa-east-1.amazonaws.com/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': 'da2-wj45i7zllbdrhogzcp6bvmv7mu',
+    },
+    body: JSON.stringify({
+      query: `query { getUltimaAnalise(id: "analise-bitcoin") { id timestamp analise } }`,
+    })
+  });
+    const json = await res.json();
+    return json?.data?.getUltimaAnalise || null;
+}
+
 export default function CriptoPage() {
   const params = useParams();
   const id = (params?.id as string)?.toLowerCase();
   const data = cryptoData[id] || { title: 'Criptomoeda', description: 'Dados não encontrados.' };
+
+  const [analise, setAnalise] = useState<AnaliseData | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (id === 'bitcoin') {
+      setLoading(true);
+      fetchAnalise().then((res) => {
+        setAnalise(res);
+        setLoading(false);
+      });
+    }
+  }, [id]);
 
   return (
     <Stack spacing={3}>
@@ -33,9 +69,23 @@ export default function CriptoPage() {
         <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 66%' }, minWidth: 0, p: 1 }}>
           <Card>
             <CardContent>
-              <Typography variant="h6" gutterBottom>Análise de IA</Typography>
-              {/* Aqui será exibida a resposta do agente de IA sobre a análise mais recente */}
-              <Typography variant="body2" color="text.secondary">(Resposta da IA será exibida aqui...)</Typography>
+              <Typography variant="h6" gutterBottom>
+                Análise de IA
+                {analise?.timestamp && (
+                  <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 2 }}>
+                    {analise.timestamp}
+                  </Typography>
+                )}
+              </Typography>
+              {loading ? (
+                <CircularProgress />
+              ) : analise ? (
+                <Box sx={{ whiteSpace: 'pre-line', fontFamily: 'inherit', mt: 2 }}>
+                  {analise.analise}
+                </Box>
+              ) : (
+                <Typography variant="body2" color="text.secondary">(Resposta da IA será exibida aqui...)</Typography>
+              )}
             </CardContent>
           </Card>
         </Box>
@@ -43,14 +93,12 @@ export default function CriptoPage() {
           <Card sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>Gráfico de Candles</Typography>
-              {/* Aqui será exibido o gráfico de candles do ativo */}
               <Typography variant="body2" color="text.secondary">(Gráfico de candles será exibido aqui...)</Typography>
             </CardContent>
           </Card>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>Últimas Notícias & Sentimento</Typography>
-              {/* Aqui será exibida a lista de notícias e o sentimento */}
               <Typography variant="body2" color="text.secondary">(Notícias e sentimento serão exibidos aqui...)</Typography>
             </CardContent>
           </Card>
