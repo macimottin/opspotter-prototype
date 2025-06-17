@@ -18,8 +18,9 @@ export interface LogoProps {
   width?: number;
 }
 
-export function Logo({ height = HEIGHT, width = WIDTH }: LogoProps): React.JSX.Element {
-  const url = '/assets/OpSpotter-white.svg';
+export function Logo({ color = 'light', height = HEIGHT, width = WIDTH }: LogoProps): React.JSX.Element {
+  // Choose logo based on color prop
+  const url = color === 'light' ? '/assets/OpSpotter-white.svg' : '/assets/OpSpotter-logo.svg';
   return <Box alt="logo" component="img" height={height} src={url} width={width} />;
 }
 

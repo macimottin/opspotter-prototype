@@ -8,6 +8,17 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import ReactMarkdown from 'react-markdown';
+import dynamic from 'next/dynamic';
+import CircularProgress from '@mui/material/CircularProgress';
+
+// Dynamically import ReactApexChart to avoid SSR issues
+const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
+
+// Type for candlestick data
+interface Candle {
+  x: Date;
+  y: [number, number, number, number];
+}
 
 const commodityData: Record<string, { title: string; description: string; icon: string }> = {
   'milho': {
@@ -40,6 +51,12 @@ export default function CommodityPage() {
   const [analise, setAnalise] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [analiseTimestamp, setAnaliseTimestamp] = React.useState<string | null>(null);
+
+  // State for candlestick data
+  const [candleData, setCandleData] = React.useState<Candle[]>([]);
+  const [candleLoading, setCandleLoading] = React.useState(false);
+  const [candleError, setCandleError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     async function fetchAnalise() {
@@ -61,28 +78,65 @@ export default function CommodityPage() {
           if (!response.ok) throw new Error('Erro ao buscar análise');
           const json = await response.json();
           let analiseText = json?.data?.getUltimaAnaliseSoja?.analise || null;
+          const analiseTime = json?.data?.getUltimaAnaliseSoja?.timestamp || null;
           if (analiseText) {
             analiseText = analiseText.replaceAll(String.raw`\n`, '\n');
           }
           setAnalise(analiseText);
+          setAnaliseTimestamp(analiseTime);
         } else {
           // Default: fetch from REST API (existing logic)
           const response = await fetch(`/api/commodities/${id}/analise`);
           if (!response.ok) throw new Error('Erro ao buscar análise');
           const json = await response.json();
           let analiseText = json?.data?.getUltimaAnalise?.analise || null;
+          const analiseTime = json?.data?.getUltimaAnalise?.timestamp || null;
           if (analiseText) {
             analiseText = analiseText.replaceAll(String.raw`\n`, '\n');
           }
           setAnalise(analiseText);
+          setAnaliseTimestamp(analiseTime);
         }
       } catch {
         setError('Não foi possível carregar a análise.');
+        setAnaliseTimestamp(null);
       } finally {
         setLoading(false);
       }
     }
     if (id) fetchAnalise();
+
+    if (id === 'soja') {
+      setCandleLoading(true);
+      setCandleError(null);
+      fetch(
+        'https://api.twelvedata.com/time_series?symbol=S_1&interval=15min&outputsize=96&apikey=9160f2dd883d4fe2b73fa8bd73dc5332'
+      )
+        .then((res) => res.json())
+        .then((json) => {
+          if (json.status === 'error') {
+            setCandleError(json.message || 'Erro ao buscar dados de candles.');
+            setCandleData([]);
+          } else {
+            // Format data for ApexCharts
+            const candles = (json.values || []).map((item: { datetime: string; open: string; high: string; low: string; close: string; }) => ({
+              x: new Date(item.datetime),
+              y: [
+                Number.parseFloat(item.open),
+                Number.parseFloat(item.high),
+                Number.parseFloat(item.low),
+                Number.parseFloat(item.close),
+              ],
+            })).reverse(); // API returns newest first
+            setCandleData(candles);
+          }
+          setCandleLoading(false);
+        })
+        .catch((_error) => {
+          setCandleError('Erro ao buscar dados de candles.');
+          setCandleLoading(false);
+        });
+    }
   }, [id]);
 
   return (
@@ -99,7 +153,14 @@ export default function CommodityPage() {
         <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: 1 }}>
           <Card>
             <CardContent sx={{ maxHeight: 400, overflow: 'auto' }}>
-              <Typography variant="h6" gutterBottom>Análise de IA</Typography>
+              <Typography variant="h6" gutterBottom>
+                Análise de IA
+                {analiseTimestamp && (
+                  <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 2 }}>
+                    {analiseTimestamp}
+                  </Typography>
+                )}
+              </Typography>
               {loading && <Typography variant="body2">Carregando análise...</Typography>}
               {error && <Typography variant="body2" color="error.main">{error}</Typography>}
               {analise && (
@@ -136,7 +197,29 @@ export default function CommodityPage() {
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>Gráfico de Candles</Typography>
-              <Typography variant="body2" color="text.secondary">(Gráfico de candles será exibido aqui...)</Typography>
+              {id === 'soja' ? (
+                candleLoading ? (
+                  <CircularProgress />
+                ) : candleError ? (
+                  <Typography color="error">{candleError}</Typography>
+                ) : candleData.length > 0 ? (
+                  <ReactApexChart
+                    type="candlestick"
+                    series={[{ data: candleData }]}
+                    options={{
+                      chart: { id: 'soja-candles', height: 350, type: 'candlestick' },
+                      xaxis: { type: 'datetime' },
+                      yaxis: { tooltip: { enabled: true } },
+                      title: { text: 'Soja (S_1) - Últimas 24h (15min)', align: 'left' },
+                    }}
+                    height={350}
+                  />
+                ) : (
+                  <Typography variant="body2" color="text.secondary">Sem dados de candles.</Typography>
+                )
+              ) : (
+                <Typography variant="body2" color="text.secondary">(Gráfico de candles será exibido aqui...)</Typography>
+              )}
             </CardContent>
           </Card>
           <Card>

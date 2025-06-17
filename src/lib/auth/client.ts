@@ -57,7 +57,16 @@ class AuthClient {
     // Make API request
 
     // We do not handle the API, so we'll check if the credentials match with the hardcoded ones.
-    if (email !== 'sofia@devias.io' || password !== 'Secret1') {
+    const validUsers = [
+      { email: 'sofia@devias.io', password: 'Secret1' },
+      { email: 'maciel.mottin@gmail.com', password: 'tpdr34n3nn' }
+    ];
+
+    const isValidUser = validUsers.some(
+      (user) => user.email === email && user.password === password
+    );
+
+    if (!isValidUser) {
       return { error: 'Invalid credentials' };
     }
 
@@ -85,7 +94,22 @@ class AuthClient {
       return { data: null };
     }
 
-    return { data: user };
+    // Updated logic to return the correct avatar based on the user's email.
+    const userAvatarMap = {
+      'sofia@devias.io': '/assets/avatar.png',
+      'maciel.mottin@gmail.com': '/assets/maciel_user.png'
+    };
+
+    const userEmail = localStorage.getItem('custom-auth-email') || '';
+
+    const avatar = userAvatarMap[userEmail as keyof typeof userAvatarMap] || '/assets/avatar.png';
+
+    return {
+      data: {
+        ...user,
+        avatar
+      }
+    };
   }
 
   async signOut(): Promise<{ error?: string }> {

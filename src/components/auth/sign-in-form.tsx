@@ -29,7 +29,7 @@ const schema = zod.object({
 
 type Values = zod.infer<typeof schema>;
 
-const defaultValues = { email: 'sofia@devias.io', password: 'Secret1' } satisfies Values;
+const defaultValues = { email: '', password: '' } satisfies Values;
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
@@ -88,7 +88,7 @@ export function SignInForm(): React.JSX.Element {
             render={({ field }) => (
               <FormControl error={Boolean(errors.email)}>
                 <InputLabel>E-mail</InputLabel>
-                <OutlinedInput {...field} label="E-mail" type="email" />
+                <OutlinedInput {...field} label="E-mail" type="email" autoComplete="off" />
                 {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
               </FormControl>
             )}
@@ -122,6 +122,7 @@ export function SignInForm(): React.JSX.Element {
                   }
                   label="Senha"
                   type={showPassword ? 'text' : 'password'}
+                  autoComplete="off"
                 />
                 {errors.password ? <FormHelperText>{errors.password.message}</FormHelperText> : null}
               </FormControl>
@@ -138,16 +139,6 @@ export function SignInForm(): React.JSX.Element {
           </Button>
         </Stack>
       </form>
-      <Alert color="warning">
-        Use{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          sofia@devias.io
-        </Typography>{' '}
-        with password{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          Secret1
-        </Typography>
-      </Alert>
     </Stack>
   );
 }

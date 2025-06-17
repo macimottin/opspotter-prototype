@@ -61,6 +61,7 @@ export default function CriptoPage() {
   const data = cryptoData[id] || { title: 'Criptomoeda', description: 'Dados não encontrados.', icon: '/assets/cripto-logo.svg' };
 
   const [analise, setAnalise] = useState<string | null>(null);
+  const [analiseTimestamp, setAnaliseTimestamp] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   // State for candlestick data
@@ -73,6 +74,7 @@ export default function CriptoPage() {
       setLoading(true);
       fetchAnalise().then((res) => {
         setAnalise(res?.analise || null);
+        setAnaliseTimestamp(res?.timestamp || null);
         setLoading(false);
       });
       // Fetch candlestick data for BTC/BRL
@@ -124,6 +126,11 @@ export default function CriptoPage() {
             <CardContent sx={{ maxHeight: 400, overflow: 'auto' }}>
               <Typography variant="h6" gutterBottom>
                 Análise de IA
+                {analiseTimestamp && (
+                  <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 2 }}>
+                    {analiseTimestamp}
+                  </Typography>
+                )}
               </Typography>
               {loading ? (
                 <CircularProgress />

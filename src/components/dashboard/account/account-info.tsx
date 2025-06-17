@@ -9,12 +9,15 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 const user = {
-  name: 'Sofia Rivers',
-  avatar: '/assets/avatar.png',
+  name: 'Maciel Mottin',
+  avatar: '/assets/maciel_user.png',
   jobTitle: 'Senior Developer',
   country: 'USA',
   city: 'Los Angeles',
   timezone: 'GTM-7',
+  email: 'maciel.mottin@gmail.com',
+  firstName: 'Maciel',
+  lastName: 'Mottin',
 } as const;
 
 export function AccountInfo(): React.JSX.Element {
