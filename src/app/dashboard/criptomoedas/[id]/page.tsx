@@ -10,6 +10,7 @@ import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import dynamic from 'next/dynamic';
+import ReactMarkdown from 'react-markdown';
 
 const cryptoData: Record<string, { title: string; description: string; icon: string }> = {
   'bitcoin': {
@@ -59,7 +60,7 @@ export default function CriptoPage() {
   const id = (params?.id as string)?.toLowerCase();
   const data = cryptoData[id] || { title: 'Criptomoeda', description: 'Dados não encontrados.', icon: '/assets/cripto-logo.svg' };
 
-  const [analise, setAnalise] = useState<AnaliseData | null>(null);
+  const [analise, setAnalise] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   // State for candlestick data
@@ -71,7 +72,7 @@ export default function CriptoPage() {
     if (id === 'bitcoin') {
       setLoading(true);
       fetchAnalise().then((res) => {
-        setAnalise(res);
+        setAnalise(res?.analise || null);
         setLoading(false);
       });
       // Fetch candlestick data for BTC/BRL
@@ -123,17 +124,30 @@ export default function CriptoPage() {
             <CardContent sx={{ maxHeight: 400, overflow: 'auto' }}>
               <Typography variant="h6" gutterBottom>
                 Análise de IA
-                {analise?.timestamp && (
-                  <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 2 }}>
-                    {analise.timestamp}
-                  </Typography>
-                )}
               </Typography>
               {loading ? (
                 <CircularProgress />
               ) : analise ? (
                 <Box sx={{ whiteSpace: 'pre-line', fontFamily: 'inherit', mt: 2 }}>
-                  {analise.analise}
+                  <ReactMarkdown
+                    components={{
+                      h1: ({node, ...props}) => <Typography variant="h4" gutterBottom {...props} />,
+                      h2: ({node, ...props}) => <Typography variant="h5" gutterBottom {...props} />,
+                      h3: ({node, ...props}) => <Typography variant="h6" gutterBottom {...props} />,
+                      h4: ({node, ...props}) => <Typography variant="subtitle1" gutterBottom {...props} />,
+                      h5: ({node, ...props}) => <Typography variant="subtitle2" gutterBottom {...props} />,
+                      h6: ({node, ...props}) => <Typography variant="body1" gutterBottom {...props} />,
+                      p: ({node, ...props}) => <Typography variant="body1" paragraph {...props} />,
+                      li: ({node, ...props}) => <li><Typography variant="body2" component="span" {...props} /></li>,
+                      strong: ({node, ...props}) => <strong {...props} />,
+                      em: ({node, ...props}) => <em {...props} />,
+                      ul: ({node, ...props}) => <ul style={{ marginLeft: 24 }} {...props} />,
+                      ol: ({node, ...props}) => <ol style={{ marginLeft: 24 }} {...props} />,
+                      code: ({node, ...props}) => <code style={{ background: '#f5f5f5', borderRadius: 4, padding: '2px 4px' }} {...props} />,
+                    }}
+                  >
+                    {analise}
+                  </ReactMarkdown>
                 </Box>
               ) : (
                 <Typography variant="body2" color="text.secondary">(Resposta da IA será exibida aqui...)</Typography>

@@ -4,7 +4,6 @@ import * as React from 'react';
 import { useParams } from 'next/navigation';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
@@ -47,20 +46,36 @@ export default function CommodityPage() {
       setLoading(true);
       setError(null);
       try {
-        // Substitua a URL abaixo pela URL real da sua API
-        const response = await fetch(`/api/commodities/${id}/analise`);
-        if (!response.ok) throw new Error('Erro ao buscar análise');
-        const json = await response.json();
-        // Normalize markdown: ensure all newlines are real newlines
-        let analiseText = json?.data?.getUltimaAnalise?.analise || null;
-        // Debug: log the raw markdown string
-        console.log('Raw analise markdown:', analiseText);
-        // Robust normalization: handle double-escaped newlines and carriage returns
-        if (analiseText) {
-          // Convert all escaped newlines (\\n or \n) to real newlines using String.raw and replaceAll
-          analiseText = analiseText.replaceAll(String.raw`\n`, '\n');
+        if (id === 'soja') {
+          // Fetch Soja analysis from GraphQL API
+          const response = await fetch('https://unhoqitkhjfd3oivkzhgctybgm.appsync-api.sa-east-1.amazonaws.com/graphql', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': 'da2-wj45i7zllbdrhogzcp6bvmv7mu',
+            },
+            body: JSON.stringify({
+              query: `query { getUltimaAnaliseSoja(id: "analise-soja") { id timestamp analise } }`,
+            })
+          });
+          if (!response.ok) throw new Error('Erro ao buscar análise');
+          const json = await response.json();
+          let analiseText = json?.data?.getUltimaAnaliseSoja?.analise || null;
+          if (analiseText) {
+            analiseText = analiseText.replaceAll(String.raw`\n`, '\n');
+          }
+          setAnalise(analiseText);
+        } else {
+          // Default: fetch from REST API (existing logic)
+          const response = await fetch(`/api/commodities/${id}/analise`);
+          if (!response.ok) throw new Error('Erro ao buscar análise');
+          const json = await response.json();
+          let analiseText = json?.data?.getUltimaAnalise?.analise || null;
+          if (analiseText) {
+            analiseText = analiseText.replaceAll(String.raw`\n`, '\n');
+          }
+          setAnalise(analiseText);
         }
-        setAnalise(analiseText);
       } catch {
         setError('Não foi possível carregar a análise.');
       } finally {
